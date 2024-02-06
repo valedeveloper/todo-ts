@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { FilterValue, type TodoId, type Todo as TodoType } from './types.js'
+import { type ListToDo, type FilterValue, type TodoId, type TodoTitle, type Todo as TodoType } from './types.js'
+import Header from './components/Header.js'
 import Todos from './components/Todos.js'
 import Footer from './components/Footer.js'
 import { TODO_FILTER } from './const.js'
@@ -28,14 +29,18 @@ const App = (): JSX.Element => {
 
   ]
 
-  const [todos, setTodos] = useState(mocksToDo)
-  const [filterSelected, setFilterSelected] = useState(TODO_FILTER.ALL)
- 
-  const handledFilterChange(filter:FilterValue)=>{
-    setFilterSelected(filter)
-   }
+  const [todos, setTodos] = useState<ListToDo>(mocksToDo)
+  const [filterSelected, setFilterSelected] = useState<FilterValue>(TODO_FILTER.ALL)
 
- 
+  // const handledFilterChange(filter:FilterValue)=>{}
+  const filterTodos = todos.filter(todo => {
+    if (filterSelected === TODO_FILTER.ACTIVE) return !todo.isCompleted
+    if (filterSelected === TODO_FILTER.COMPLETED) return todo.isCompleted
+    return todo
+  })
+  const activeCount = todos.filter(todo => !todo.isCompleted).length
+  const completedCount = todos.length - activeCount
+
   const handledComplete = ({ id, isCompleted }: Pick<TodoType, 'id' | 'isCompleted'>) => {
     const newTodos = todos.map(todo => {
       if (todo.id === id) {
@@ -47,17 +52,40 @@ const App = (): JSX.Element => {
     })
     setTodos(newTodos)
   }
-
   const handledRemove = (id: TodoId): void => {
     const newTodos = todos.filter(todo => todo.id !== id)
     setTodos(newTodos)
   }
-
+  const onFilterSelected = (key: FilterValue): void => {
+    setFilterSelected(key)
+  }
+  const onClearCompleted = (): void => {
+    const newTodos = todos.map(todo => {
+      if (todo.isCompleted) {
+        return {
+          ...todo,
+          isCompleted: false // Aquí corregimos el error y marcamos el todo como no completado
+        }
+      }
+      return todo
+    })
+    setTodos(newTodos)
+  }
+  const onAddTodo = (todo: TodoTitle): void => {
+    const newTodo = {
+      id: todos.length + 1,
+      title: todo,
+      isCompleted: false
+    }
+    const newTodos = [...todos, newTodo]
+    setTodos(newTodos)
+  }
   return (
-   <>
-    <div className='todoapp'><Todos todos={todos} onRemoveTodos={handledRemove} onCompletedTodos={handledComplete} /></div>
-    <Footer activeCount completedCount filterSelected onClearCompleted onFilterSelected />
-    </>
+  <>
+  <Header onAddTodo={onAddTodo}/>
+    <div className='todoapp'><Todos todos={filterTodos} onRemoveTodos={handledRemove} onCompletedTodos={handledComplete} /></div>
+    <Footer activeCount={activeCount} completedCount={completedCount} filterSelected={filterSelected} onFilterSelected={onFilterSelected} onClearCompleted={onClearCompleted} />
+  </>
   )
 }
 export default App

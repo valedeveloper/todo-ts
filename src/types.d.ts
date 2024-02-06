@@ -1,6 +1,7 @@
 import { type TODO_FILTER } from './const'
 
 export type TodoId = number
+export type TodoTitle = string
 export interface Todo {
   id: TodoId
   title: string

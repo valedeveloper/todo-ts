@@ -1,13 +1,18 @@
-import { type TODO_FILTER, FILTERS_BUTTONS } from '../const'
+import { FILTERS_BUTTONS } from '../const'
 import { type FilterValue } from '../types'
 
 interface IFilter {
+  completedCount: number
   filterSelected: FilterValue
   onFilterSelected: (filter: FilterValue) => void
+  onClearCompleted: () => void
+
 }
 const Filter: React.FC<IFilter> = ({
   filterSelected,
-  onFilterSelected
+  onFilterSelected,
+  onClearCompleted,
+  completedCount
 }) => {
   return (
     <ul className="filters">
@@ -30,7 +35,9 @@ const Filter: React.FC<IFilter> = ({
           </li>)
         }
         )
+
       }
+      {completedCount > 0 ? <button className='clear-comleted' onClick={onClearCompleted}>¿No está completada?</button> : null}
     </ul>
   )
 }
