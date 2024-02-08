@@ -1,4 +1,4 @@
-export const mocksToDo = [
+export const mocksTodos = [
   {
     id: 1,
     title: 'Ver Twitch',
@@ -19,5 +19,4 @@ export const mocksToDo = [
     title: 'Curso CSS',
     isCompleted: false
   }
-
 ]
